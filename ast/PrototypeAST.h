@@ -12,7 +12,7 @@ class PrototypeAST {
   std::vector<std::string> Args;
 
 public:
-  PrototypeAST(std::string &Name, std::vector<std::string> Args): Name(Name), Args(Args) {}
+  PrototypeAST(const std::string &name, std::vector<std::string> Args) : Name(name), Args(std::move(Args)) {}
 
   const std::string& getName() const {
     return Name;
