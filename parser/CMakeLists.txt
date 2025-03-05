@@ -3,9 +3,9 @@ add_library(parser
      parser.h
 )
 
-target_include_directories(parser PRIVATE ${CMAKE_SOURCE_DIR}/ast)
-target_include_directories(parser PRIVATE ${CMAKE_SOURCE_DIR}/lexer)
-target_include_directories(parser PRIVATE ${CMAKE_SOURCE_DIR}/logger)
+target_include_directories(parser PUBLIC ${CMAKE_SOURCE_DIR}/ast)
+target_include_directories(parser PUBLIC ${CMAKE_SOURCE_DIR}/lexer)
+target_include_directories(parser PUBLIC ${CMAKE_SOURCE_DIR}/logger)
 
 target_link_libraries(parser PRIVATE ast)
 target_link_libraries(parser PRIVATE lexer)

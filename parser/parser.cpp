@@ -1,14 +1,5 @@
 #include "parser.h"
-#include "BinaryExprAST.h"
-#include "ExprAST.h"
-#include "FunctionAST.h"
-#include "PrototypeAST.h"
-#include "lexer.h"
-#include "logger.h"
-#include "token.h"
-#include <_ctype.h>
-#include <algorithm>
-#include <memory>
+
 
 std::map<char, int> BinopPrecedence;
 
@@ -105,7 +96,7 @@ std::unique_ptr<ExprAST> ParseIdentifierExpr() {
 std::unique_ptr<ExprAST> ParsePrimary() {
     switch(CurTok) {
         default:
-           return LogError("Unknown Token when Parsing the Expression");
+           return LogError("Unknown Token when Parsing the Expression\n");
         case TOKEN_NUMBER:
             return ParseNumberExpr();
         case TOKEN_IDENTIFIER:

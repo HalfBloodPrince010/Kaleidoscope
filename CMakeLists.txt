@@ -14,7 +14,4 @@ add_subdirectory(parser)
 
 add_executable(${PROJECT_NAME} main.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE lexer)
-target_link_libraries(${PROJECT_NAME} PRIVATE ast)
-target_link_libraries(${PROJECT_NAME} PRIVATE logger)
-target_link_libraries(${PROJECT_NAME} PRIVATE parser)
+target_link_libraries(${PROJECT_NAME} PRIVATE lexer ast logger parser)

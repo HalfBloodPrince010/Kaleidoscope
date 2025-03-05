@@ -1,43 +1,88 @@
-#include"lexer/lexer.h"
+// Lexer headers
+#include "lexer/lexer.h"
 #include "lexer/token.h"
+
+// AST headers
+#include "ast/BinaryExprAST.h"
+#include "ast/CallExprAST.h"
+#include "ast/ExprAST.h"
+#include "ast/FunctionAST.h"
+#include "ast/NumberExprAST.h"
+#include "ast/PrototypeAST.h"
+#include "ast/VariableExprAST.h"
+
+// Parser headers
+#include "parser/parser.h"
+
+// Logger headers
+#include "logger/logger.h"
+
 #include <cstdio>
 #include <iostream>
+
+static void HandleDefinition() {
+  if(auto FnAST = ParseDefinition()) {
+    fprintf(stderr, "Parsed a Function Definition.\n");
+  } else {
+    /// Skip - aka Synchronization.
+    /* We want to report as many errors as possible in the
+    parser
+    */
+    getNextToken();
+  }
+}
+
+static void HandleExtern() {
+  if(auto ProtoAST = ParseExtern()) {
+    fprintf(stderr, "Parsed a Extern Definition.\n");
+  } else {
+    /// Skip for error recovery, same as above [synchronization]
+    getNextToken();
+  }
+}
+
+static void HandleTopLevelExpression() {
+  // Evaluate a top-level expression into an anonymous function.
+  if (auto AnonFn = ParseTopLevelExpr()) {
+    fprintf(stderr, "Parsed a top-level expr\n");
+  } else {
+    // Skip token for error recovery.
+    getNextToken();
+  }
+}
 
 static void MainLoop() {
   while (true) {
     fprintf(stderr, "ready> ");
     switch (CurTok) {
     case TOKEN_EOF:
-      std::cout << "End of File Token: " << TOKEN_EOF << "\n";
       return;
     case ';': // ignore top-level semicolons.
       getNextToken();
       break;
     case TOKEN_DEF:
-      std::cout << "Definition Token: " << TOKEN_DEF << "\n";
-      getNextToken();
-      break;
-    case TOKEN_NUMBER:
-      std::cout << "Number Token: " << TOKEN_NUMBER << "-->" << NumVal << "\n";
-      getNextToken();
+      HandleDefinition();
       break;
     case TOKEN_EXTERN:
-      std::cout << "Extern Token: " << TOKEN_EXTERN << "\n";
-      getNextToken();
+      HandleExtern();
       break;
     default:
-      std::cout << "Default Token: " << IdentifierStr << "\n";
-      getNextToken();
+      HandleTopLevelExpression();
       break;
     }
   }
 }
 
 int main() {
-    fprintf(stderr, "ready> ");
+  BinopPrecedence['<'] = 10;
+  BinopPrecedence['+'] = 20;
+  BinopPrecedence['-'] = 20;
+  BinopPrecedence['*'] = 40;
 
-    getNextToken();
-    MainLoop();
+  fprintf(stderr, "ready> ");
 
-    return 0;
+  getNextToken();
+  MainLoop();
+
+  return 0;
 }
