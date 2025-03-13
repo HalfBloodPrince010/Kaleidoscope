@@ -11,6 +11,7 @@ class VariableExprAST : public ExprAST {
 
 public:
   VariableExprAST(std::string &Name): Name(Name) {}
+  llvm::Value *codegen() override;
 };
 
 #endif

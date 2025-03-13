@@ -33,7 +33,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/lexer
     ${CMAKE_SOURCE_DIR}/logger
     ${CMAKE_SOURCE_DIR}/parser
-    ${CMAKE_SOURCE_DIR}/llvm_support
+    ${CMAKE_SOURCE_DIR}/llvm-support
 )
 
 # Subdirectories
@@ -41,8 +41,8 @@ add_subdirectory(lexer)
 add_subdirectory(ast)
 add_subdirectory(logger)
 add_subdirectory(parser)
-add_subdirectory(llvm_support)
+add_subdirectory(llvm-support)
 
 add_executable(${PROJECT_NAME} main.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE lexer ast logger parser llvm_support ${LLVM_LIBS} ${LLVM_SYSTEM_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE lexer ast logger parser llvm-support ${LLVM_LIBS} ${LLVM_SYSTEM_LIBS})

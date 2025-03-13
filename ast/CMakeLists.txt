@@ -1,5 +1,10 @@
 add_library(ast 
-    ExprAST.cpp
+    BinaryExprAST.cpp
+    NumberExprAST.cpp
+    VariableExprAST.cpp
+    CallExprAST.cpp
+    PrototypeAST.cpp
+    FunctionAST.cpp
     ExprAST.h
     BinaryExprAST.h
     NumberExprAST.h

@@ -16,6 +16,7 @@ class FunctionAST {
 
 public:
   FunctionAST(std::unique_ptr<PrototypeAST> Prototype, std::unique_ptr<ExprAST> Body): Prototype(std::move(Prototype)), Body(std::move(Body)) {}
+  llvm::Function *codegen();
 };
 
 #endif

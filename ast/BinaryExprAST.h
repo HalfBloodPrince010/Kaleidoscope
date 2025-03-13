@@ -11,6 +11,7 @@ class BinaryExprAST : public ExprAST {
 
 public:
   BinaryExprAST(char Opcode, std::unique_ptr<ExprAST> LHS, std::unique_ptr<ExprAST> RHS): Opcode(Opcode), LHS(std::move(LHS)), RHS(std::move(RHS)) {}
+  llvm::Value *codegen() override;
 };
 
 #endif
