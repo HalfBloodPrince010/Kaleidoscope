@@ -9,7 +9,7 @@ llvm::Value *CallExprAST::codegen() {
     llvm::Function *CalleeF = TheModule->getFunction(Callee);
 
     if(!CalleeF) {
-        return LogErrorV("Unknown Function Referenced");
+        return LogErrorV("Unknown Function Referenced\n");
     }
 
     if(CalleeF->arg_size() != Args.size()) {
@@ -26,5 +26,5 @@ llvm::Value *CallExprAST::codegen() {
         }
     }
 
-    return Builder.CreateCall(CalleeF, ArgsV, "calltmp");
+    return Builder->CreateCall(CalleeF, ArgsV, "calltmp");
 }

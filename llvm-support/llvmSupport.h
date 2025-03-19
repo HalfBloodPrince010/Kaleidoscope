@@ -33,7 +33,8 @@
 The LLVMContext class serves as the environment for all LLVM operations and owns critical 
 data structures including type tables, constant pools, and metadata repositories.
 */
-extern llvm::LLVMContext TheContext;
+extern std::unique_ptr<llvm::LLVMContext> TheContext;
+
 
 
 /*
@@ -41,7 +42,7 @@ The IRBuilder class is your primary tool for generating LLVM instructions. It ma
 insertion point (where new instructions will be placed) and provides convenient methods for 
 creating all instruction types.
 */
-extern llvm::IRBuilder<> Builder;
+extern std::unique_ptr<llvm::IRBuilder<>> Builder;
 
 
 /*
@@ -110,5 +111,7 @@ Implements common instrumentation like timing the passes and
 printing IR before/after passes.
 */
 extern std::unique_ptr<llvm::StandardInstrumentations> TheSI;
+
+extern llvm::ExitOnError ExitOnErr;
 
 #endif

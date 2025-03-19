@@ -16,8 +16,8 @@ llvm::Function *FunctionAST::codegen() {
     }
 
     // Create a Basic Block for the Function
-    llvm::BasicBlock *BB = llvm::BasicBlock::Create(TheContext, "entry", TheFunction);
-    Builder.SetInsertPoint(BB);
+    llvm::BasicBlock *BB = llvm::BasicBlock::Create(*TheContext, "entry", TheFunction);
+    Builder->SetInsertPoint(BB);
 
     NamedValues.clear();
     /// Add the Function Parameter to Value Mapping, Body of the Function when using VariableExpr will fetch from NamedValues
@@ -26,7 +26,7 @@ llvm::Function *FunctionAST::codegen() {
     }
 
     if(llvm::Value *retVal = Body->codegen()) {
-        Builder.CreateRet(retVal);
+        Builder->CreateRet(retVal);
 
         verifyFunction(*TheFunction);
 

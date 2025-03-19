@@ -1,15 +1,16 @@
 #include "llvmSupport.h"
+#include "llvm/Support/Error.h"
 
 /*
 The LLVMContext objects owns core LLVM Data Structures like LLVM Types
 */
-llvm::LLVMContext TheContext;
+std::unique_ptr<llvm::LLVMContext> TheContext;
 
 
 /*
 The IRBuilder object helps generate IR Instructions
 */
-llvm::IRBuilder<> Builder(TheContext);;
+std::unique_ptr<llvm::IRBuilder<>> Builder;
 
 
 /*
@@ -79,3 +80,5 @@ Implements common instrumentation like timing the passes and
 printing IR before/after passes.
 */
 std::unique_ptr<llvm::StandardInstrumentations> TheSI;
+
+llvm::ExitOnError ExitOnErr;

@@ -20,17 +20,23 @@
 
 // Logger headers
 #include "logger/logger.h"
+#include "llvm/Support/Error.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/InstCombine/InstCombine.h"
 #include "llvm/Transforms/Scalar/GVN.h"
 #include "llvm/Transforms/Scalar/Reassociate.h"
 
+#include <cassert>
 #include <cstdio>
 #include <iostream>
 
 static void InitializeModuleAndManagers(void) {
-  TheModule = std::make_unique<llvm::Module>("My Cool JIT", TheContext);
+  TheContext = std::make_unique<llvm::LLVMContext>();
+  TheModule = std::make_unique<llvm::Module>("KaleidoscopeJIT", *TheContext);
   TheModule->setDataLayout(TheJIT->getDataLayout());
+
+  // Create a new builder for the module.
+  Builder = std::make_unique<llvm::IRBuilder<>>(*TheContext);
 
   // Create Analysis Managers
   TheLAM = std::make_unique<llvm::LoopAnalysisManager>();
@@ -41,7 +47,7 @@ static void InitializeModuleAndManagers(void) {
   // Create Pass Managers
   TheFPM = std::make_unique<llvm::FunctionPassManager>();
   ThePIC = std::make_unique<llvm::PassInstrumentationCallbacks>();
-  TheSI = std::make_unique<llvm::StandardInstrumentations>(TheContext, true);
+  TheSI = std::make_unique<llvm::StandardInstrumentations>(*TheContext, true);
   
   TheSI->registerCallbacks(*ThePIC, TheMAM.get());
 
@@ -118,6 +124,30 @@ static void HandleTopLevelExpression() {
       fprintf(stderr, "Parsed a top-level expr\n");
       FnIR->print(llvm::errs());
       fprintf(stderr, "\n");
+
+      auto RT = TheJIT->getMainJITDylib().createResourceTracker();
+
+      /// 1. Move the LLVM IR module to the JIT, making its functions available for execution.
+      auto TSM = llvm::orc::ThreadSafeModule(std::move(TheModule), std::move(TheContext));
+      ExitOnErr(TheJIT->addModule(std::move(TSM), RT));
+
+      /// 2. Create a new module for the future code
+      InitializeModuleAndManagers();
+
+      // Search the JIT for the __anon_expr symbol.
+      auto ExprSymbol = ExitOnErr(TheJIT->lookup("__anon_expr"));
+      
+      /*
+      ExprSymbol.getAddress() - Retrieves the raw memory address where the JIT-compiled function resides. 
+      This is the actual location in memory where the machine code for the function has been placed.
+
+      Convert this to a function pointer of returnType double which takes no arguments.
+      */
+      double (*FP)() = ExprSymbol.getAddress().toPtr<double (*)()>();
+      fprintf(stderr, "Evaluated to %f\n", FP());
+
+      // Delete the anonymous expression module from the JIT.
+      ExitOnErr(RT->remove());
     }
   } else {
     // Skip token for error recovery.
