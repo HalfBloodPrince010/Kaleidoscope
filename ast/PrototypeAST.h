@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <llvm/IR/IRBuilder.h>
+#include <map>
+
 
 // Represents the "prototype" for a function, Name and Arguments Names
 // No type, as all values by default are double
@@ -20,5 +22,7 @@ public:
     return Name;
   } 
 };
+
+extern std::map<std::string, std::unique_ptr<PrototypeAST>> FunctionProtos;
 
 #endif

@@ -1,4 +1,5 @@
 #include "CallExprAST.h"
+#include "FunctionAST.h"
 #include "llvmSupport.h"
 #include "logger.h"
 
@@ -6,7 +7,7 @@
 llvm::Value *CallExprAST::codegen() {
     // Function should already be defined in order to call
     // The Module has all the function and global variables defined.
-    llvm::Function *CalleeF = TheModule->getFunction(Callee);
+    llvm::Function *CalleeF = getFunction(Callee);
 
     if(!CalleeF) {
         return LogErrorV("Unknown Function Referenced\n");

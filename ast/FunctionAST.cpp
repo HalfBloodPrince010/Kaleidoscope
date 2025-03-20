@@ -1,11 +1,32 @@
 #include "FunctionAST.h"
+#include "PrototypeAST.h"
 #include "llvmSupport.h"
 #include "llvm/IR/BasicBlock.h"
 
 
+llvm::Function *getFunction(std::string Name) {
+    // Check if the Function is already defined in the Current Module
+    if(auto *F = TheModule->getFunction(Name)) {
+        return F;
+    }
+
+    // If not check whether we can codegen the declaration (not definition) from the existing Prototye
+    auto FI = FunctionProtos.find(Name);
+    if(FI != FunctionProtos.end()) {
+        return FI->second->codegen();
+    }
+
+    // If no existing prototype exists, return null.
+  return nullptr;
+}
+
+
 llvm::Function *FunctionAST::codegen() {
-    /// When Function Decl F was created, Proto added it to the LLVM Module
-    llvm::Function *TheFunction = TheModule->getFunction(Prototype->getName());
+    // Transfer ownership of the prototype to the FunctionProtos map, but keep a
+    // reference to it for use below.
+    auto &P = *Prototype;
+    FunctionProtos[Prototype->getName()] = std::move(Prototype);
+    llvm::Function *TheFunction = getFunction(P.getName());
 
     if (!TheFunction) {
         TheFunction = Prototype->codegen();

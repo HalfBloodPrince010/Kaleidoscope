@@ -30,6 +30,8 @@
 #include <cstdio>
 #include <iostream>
 
+std::map<std::string, std::unique_ptr<PrototypeAST>> FunctionProtos;
+
 static void InitializeModuleAndManagers(void) {
   TheContext = std::make_unique<llvm::LLVMContext>();
   TheModule = std::make_unique<llvm::Module>("KaleidoscopeJIT", *TheContext);
@@ -92,6 +94,14 @@ static void HandleDefinition() {
       fprintf(stderr, "Parsed a Function Definition.\n");
       FnIR->print(llvm::errs());
       fprintf(stderr, "\n");
+      // Move each function to its own module, and call expression which creates a anon function
+      // 1. Will look if the function was defined in this module, if not it will generate the
+      // Function Declaration, and JIT can finc the right module.
+      // CallExpr anon function is removed later, but this wont remove the function definition.
+      fprintf(stderr, "Adding Function to a separate module\n");
+      ExitOnErr(TheJIT->addModule(
+          llvm::orc::ThreadSafeModule(std::move(TheModule), std::move(TheContext))));
+      InitializeModuleAndManagers();
     }
     
   } else {
@@ -109,6 +119,7 @@ static void HandleExtern() {
       fprintf(stderr, "Parsed a Extern Definition.\n");
       FnIR->print(llvm::errs());
       fprintf(stderr, "\n");
+      FunctionProtos[ProtoAST->getName()] = std::move(ProtoAST);
     }
     
   } else {

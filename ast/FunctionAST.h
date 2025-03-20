@@ -5,6 +5,8 @@
 #include "PrototypeAST.h"
 #include <memory>
 
+extern llvm::Function *getFunction(std::string Name);
+
 // FunctionAST - This class represents a function definition itself.
 // Prototye + Body of the Function
 /*
