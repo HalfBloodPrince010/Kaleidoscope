@@ -8,6 +8,7 @@
 #include "BinaryExprAST.h"
 #include "PrototypeAST.h"
 #include "FunctionAST.h"
+#include "IfExprAST.h"
 #include "lexer.h"
 #include "token.h"
 #include "logger.h"
@@ -25,6 +26,7 @@ std::unique_ptr<ExprAST> ParseIdentifierExpr();
 std::unique_ptr<ExprAST> ParseExpression();
 std::unique_ptr<ExprAST> ParsePrimary();
 std::unique_ptr<ExprAST> ParseBinOpRHS(int ExprPrec, std::unique_ptr<ExprAST> LHS);
+std::unique_ptr<ExprAST> ParseIfExpr();
 std::unique_ptr<PrototypeAST> ParsePrototype();
 std::unique_ptr<PrototypeAST> ParseExtern();
 std::unique_ptr<FunctionAST> ParseDefinition();

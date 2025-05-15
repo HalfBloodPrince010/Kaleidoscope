@@ -33,6 +33,18 @@ int getToken() {
             return TOKEN_EXTERN;
         }
 
+        if(IdentifierStr == "if") {
+            return TOKEN_IF;
+        }
+
+        if(IdentifierStr == "then") {
+            return TOKEN_THEN;
+        }
+
+        if(IdentifierStr == "else") {
+            return TOKEN_ELSE;
+        }
+
         return TOKEN_IDENTIFIER;
     }
 

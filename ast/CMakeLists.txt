@@ -5,6 +5,7 @@ add_library(ast
     CallExprAST.cpp
     PrototypeAST.cpp
     FunctionAST.cpp
+    IfExprAST.cpp
     ExprAST.h
     BinaryExprAST.h
     NumberExprAST.h
@@ -12,4 +13,5 @@ add_library(ast
     CallExprAST.h
     PrototypeAST.h
     FunctionAST.h
+    IfExprAST.h
 )

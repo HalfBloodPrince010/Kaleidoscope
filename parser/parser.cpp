@@ -1,4 +1,10 @@
 #include "parser.h"
+#include "ExprAST.h"
+#include "IfExprAST.h"
+#include "lexer.h"
+#include "logger.h"
+#include "token.h"
+#include <memory>
 
 
 std::map<char, int> BinopPrecedence;
@@ -101,6 +107,8 @@ std::unique_ptr<ExprAST> ParsePrimary() {
             return ParseNumberExpr();
         case TOKEN_IDENTIFIER:
             return ParseIdentifierExpr();
+        case TOKEN_IF:
+            return ParseIfExpr();
         case '(':
             return ParseParenExpr();
     }
@@ -262,4 +270,39 @@ std::unique_ptr<FunctionAST> ParseDefinition() {
 std::unique_ptr<PrototypeAST> ParseExtern() {
     getNextToken(); /// consume extern
     return ParsePrototype();
+}
+
+/// ifexpr ::= 'if' expression 'then' expression 'else' expression
+std::unique_ptr<ExprAST> ParseIfExpr() {
+    getNextToken();  /// Consume "if"
+
+    // Condition
+    auto Cond = ParseExpression();
+    if(!Cond) {
+        return nullptr;
+    }
+
+    if(CurTok != TOKEN_THEN) {
+        return LogError("Expected then after if cond");
+    }
+    
+    getNextToken();  /// consume "then"
+
+    auto Then = ParseExpression();
+    if(!Then) {
+        return nullptr;
+    }
+
+    if(CurTok != TOKEN_ELSE) {
+        return LogError("Expected else after if else");
+    }
+
+    getNextToken();  /// Consume "else"
+
+    auto Else = ParseExpression();
+    if(!Else) {
+        return nullptr;
+    }
+
+    return std::make_unique<IfExprAST>(std::move(Cond), std::move(Then), std::move(Else));
 }

@@ -10,7 +10,12 @@ enum TOKEN {
 
     // Primary
     TOKEN_IDENTIFIER = -4,
-    TOKEN_NUMBER = -5
+    TOKEN_NUMBER = -5,
+
+    // Control Flow
+    TOKEN_IF = -6,
+    TOKEN_THEN = -7,
+    TOKEN_ELSE = -8
 };
 
 
