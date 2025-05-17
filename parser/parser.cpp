@@ -1,5 +1,6 @@
 #include "parser.h"
 #include "ExprAST.h"
+#include "ForExprAST.h"
 #include "IfExprAST.h"
 #include "lexer.h"
 #include "logger.h"
@@ -109,6 +110,8 @@ std::unique_ptr<ExprAST> ParsePrimary() {
             return ParseIdentifierExpr();
         case TOKEN_IF:
             return ParseIfExpr();
+        case TOKEN_FOR:
+            return ParseForExpr();
         case '(':
             return ParseParenExpr();
     }
@@ -305,4 +308,59 @@ std::unique_ptr<ExprAST> ParseIfExpr() {
     }
 
     return std::make_unique<IfExprAST>(std::move(Cond), std::move(Then), std::move(Else));
+}
+
+/// forexpr ::= 'for' identifier '=' expr ',' expr (',' expr)? 'in' expression
+std::unique_ptr<ExprAST> ParseForExpr() {
+    getNextToken(); /// consume "for" keyword
+
+    if(CurTok != TOKEN_IDENTIFIER) {
+        return LogError("Expected identifier after for keyword");
+    }
+
+    std::string IdName = IdentifierStr;
+    getNextToken(); /// consume Identifier
+
+    if(CurTok != '=') {
+        return LogError("expected '=' after for");
+    }
+    getNextToken();  /// consume '='.
+
+    auto Start  = ParseExpression();
+    if(!Start) {
+        return nullptr;
+    }
+    if(CurTok != ',') {
+        return LogError("Expected ',' after the initial Start expression");
+    }
+    getNextToken(); /// consume ","
+
+    auto End = ParseExpression();
+    if(!End) {
+        return nullptr;
+    }
+
+    // The step value is optional.
+    std::unique_ptr<ExprAST> Step;
+    if(CurTok == ',') {
+        getNextToken();  /// consume ","
+        Step = ParseExpression();
+        if(!Step) {
+            return nullptr;
+        }
+    }
+
+    if(CurTok != TOKEN_IN) {
+        return LogError("Expecetd 'in' after for");
+    }
+    getNextToken();  /// consume "in"
+
+    auto Body = ParseExpression();
+    if(!Body) {
+        return nullptr;
+    }
+
+    return std::make_unique<ForExprAST>(IdName, std::move(Start),
+    std::move(End), std::move(Step),
+    std::move(Body));
 }

@@ -45,6 +45,14 @@ int getToken() {
             return TOKEN_ELSE;
         }
 
+        if(IdentifierStr == "for") {
+            return TOKEN_FOR;
+        }
+
+        if(IdentifierStr == "in") {
+            return TOKEN_IN;
+        }
+
         return TOKEN_IDENTIFIER;
     }
 
